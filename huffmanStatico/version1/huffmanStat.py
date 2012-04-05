@@ -1,4 +1,3 @@
-## {{{ http://code.activestate.com/recipes/576603/ (r2)
 import os
 import marshal
 import cPickle
@@ -188,6 +187,8 @@ class Decoder(object):
         fout.close()
 
 if __name__=='__main__':
+
+    #imposto nomi file
     original_file = raw_input("Inserisci il nome del file da comprimere: ")
     original_file_split = original_file.split(".")
     file_name = original_file_split[0]

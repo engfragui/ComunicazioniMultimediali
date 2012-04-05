@@ -1,0 +1,43 @@
+freq = defaultdict(int)
+
+#qui di seguito le frequenze by wikipedia per l'alfabeto italiano
+freq['a'] = 11.7 #11.74
+freq['b'] = 0.92
+freq['c'] = 4.50
+freq['d'] = 3.73
+freq['e'] = 11.8 #11.79
+freq['f'] = 0.95
+freq['g'] = 1.64
+freq['h'] = 1.54
+freq['i'] = 11.3 #11.28
+freq['j'] = 0.00
+freq['k'] = 0.00
+freq['l'] = 6.51
+freq['m'] = 2.51
+freq['n'] = 6.88
+freq['o'] = 9.83
+freq['p'] = 3.05
+freq['q'] = 0.51
+freq['r'] = 6.37
+freq['s'] = 4.98
+freq['t'] = 5.62
+freq['u'] = 3.01
+freq['v'] = 2.10
+freq['w'] = 0.00
+freq['x'] = 0.00
+freq['y'] = 0.00
+freq['z'] = 0.49
+#se viene 100 e' meglio visto che sono delle percentuali
+#me ne frego delle lettere accentate (basta non fare testi con lettere accentate)
+#oppure posso fare in inglese cosi' non ci sono problemi
+#in ogni caso mi devo ricordare di mettere anche lo spazio e la punteggiatura magari
+
+print "ecco la tabella delle frequenze:" #TODO debug
+print freq.items() #TODO debug
+print ""
+
+print "ecco la HuffStructure:" #TODO debug
+print HuffStructure(freq.iteritems()) #TODO debug
+print ""
+
+return HuffStructure(freq.iteritems())
