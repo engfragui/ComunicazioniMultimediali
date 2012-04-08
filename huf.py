@@ -4,30 +4,30 @@ from collections import defaultdict
 
 
 def char_freq(file_obj):
-    """Build a frequency table from chars read from input file."""
 
-    freq = defaultdict(int) #lista di elementi in cui il primo e' il carattere, il secondo la frequenza (fa tutto python)
+    """Costruisce tabelle delle frequenze a partire dai caratteri presenti nel file"""
+
+    freq = defaultdict(int) #lista di elementi in cui il primo e' il carattere, il secondo la frequenza
     for line in file_obj:
         print line
         for ch in line:
             print ch
             freq[ch] += 1
-            print "carattere " + ch + " ha frequenza " + str(freq[ch]) #TODO debug
+            print "carattere " + ch + " ha frequenza " + str(freq[ch])
 
-
-    print "ecco la tabella delle frequenze:" #TODO debug
-    print freq.items() #TODO debug
+    print "ecco la tabella delle frequenze:"
+    print freq.items()
     print ""
 
-    print "ecco la HuffStructure:" #TODO debug
-    print HuffStructure(freq.iteritems()) #TODO debug
+    print "ecco la HuffStructure:"
+    print HuffStructure(freq.iteritems())
     print ""
 
-    return HuffStructure(freq.iteritems())
+    return HuffStructure(freq.iteritems()) #generazione dell'albero
 
 
-def read_header_originale(f_in):
-    """VERSIONE ORIGINALE MA NON MI PIACEVA"""
+def read_header_nonvisibile(f_in):
+    """VERSIONE ORIGINALE MA NON LEGGIBILE"""
     header = f_in.read(1024) # 256 symbols, 4 bytes each
     #essendo non leggibile dall'utente finale questo header non mi piace molto!
 
@@ -38,8 +38,8 @@ def read_header_originale(f_in):
     return HuffStructure(((chr(ch_indx), weight) for ch_indx, \
                             weight in enumerate(unpacked_header) if weight))
 
-def read_header(f_in):
-    """Reads a huffman header."""
+def read_header_miaversione(f_in):
+    """Reads a huffman header. VERSIONE FATTA DA ME"""
 
     header = []
 
@@ -53,8 +53,27 @@ def read_header(f_in):
                                                      weight in enumerate(header) if weight))
 
 
-def write_header_originale(f_out_obj, frequency_table):
-    """VERSIONE ORIGINALE MA NON MI PIACEVA"""
+def read_header(f_in):
+    """Reads a huffman header. VERSIONE FATTA DA ME"""
+
+    header = []
+
+    for i in range(0,256):
+        number = []
+        c = f_in.read(1) #leggo un carattere
+        while (c!=";"): #finche' diverso dal separatore
+            number.append(c) #lo appendo per formare il numero totale
+            c = f_in.read(1) #leggo un altro carattere
+        header.append(number)
+
+    print header #TODO debug
+
+    return HuffStructure(((chr(ch_indx), weight) for ch_indx,\
+                                                     weight in enumerate(header) if weight))
+
+
+def write_header_nonvisibile(f_out_obj, frequency_table):
+    """VERSIONE ORIGINALE MA NON LEGGIBILE"""
 
     for i in xrange(256): #percorro tutti i 256 caratteri dell'ascii #TODO debug
         print "carattere " + chr(i) + " ha peso " + str(frequency_table[chr(i)].weight) #TODO debug
@@ -76,8 +95,8 @@ def write_header_originale(f_out_obj, frequency_table):
 
     f_out_obj.write(''.join(header))
 
-def write_header(f_out_obj, frequency_table):
-    """Write to file output a huffman header."""
+def write_header_miaversione(f_out_obj, frequency_table):
+    """Write to file output a huffman header. VERSIONE FATTA DA ME"""
 
     for i in xrange(256): #percorro tutti i 256 caratteri dell'ascii #TODO debug
         print "carattere " + chr(i) + " ha peso " + str(frequency_table[chr(i)].weight) #TODO debug
@@ -87,6 +106,20 @@ def write_header(f_out_obj, frequency_table):
     for i in xrange(256):
         print '%(#)04s' % {"#" : frequency_table[chr(i)].weight}
         header += '%(#)04s' % {"#" : frequency_table[chr(i)].weight}
+
+    f_out_obj.write(''.join(header))
+
+def write_header(f_out_obj, frequency_table):
+    """Write to file output a huffman header. VERSIONE FATTA DA ME"""
+
+    for i in xrange(256): #percorro tutti i 256 caratteri dell'ascii #TODO debug
+        print "carattere " + chr(i) + " ha peso " + str(frequency_table[chr(i)].weight) #TODO debug
+
+
+    header = ''
+    for i in xrange(256):
+        print frequency_table[chr(i)].weight
+        header += str(frequency_table[chr(i)].weight) + ";"
 
     f_out_obj.write(''.join(header))
 
@@ -172,7 +205,9 @@ class HuffNode(object):
 
 
 class HuffStructure(dict):
-    """Data structure used in this Huffman implementation."""
+
+    """Albero dei caratteri"""
+
     def __init__(self, *args, **kwargs):
         self.update(*args, **kwargs)
 
@@ -282,23 +317,28 @@ class HuffStructure(dict):
 
 
 class HuffBase(object):
-    """Base class for encoding and decoding Huffman files."""
 
-    def __init__(self, file_in, file_out, encoding=True):
+    """Classe base da cui ereditano Huff e Unhuff"""
+
+    def __init__(self, file_in, file_out, encoding):
+
         if encoding:
             in_mode = 'r'
             out_mode = 'wb'
-        else:
+        else: #decoding
             in_mode = 'rb'
             out_mode = 'w'
 
+        #apro i file
         self.file_in = open(file_in, in_mode)
         self.file_out = open(file_out, out_mode)
 
         self.root = None
 
     def _gen_codes(self):
-        """Build tree and generate codes for current nodes on it."""
+
+        """Costruisce albero dei caratteri e genera codici per ciascun nodo (carattere)"""
+
         self.root = self.freq_table.build_tree()
         self.freq_table.generate_codes(self.root)
 
@@ -307,15 +347,16 @@ class HuffBase(object):
         self.file_out.close()
 
 
-class Huff(HuffBase):
-    def __init__(self, file_in, file_out, choice): #se choice=="f" allora va bene questo codice, se choice=="s" devo fare con le statistiche
-        HuffBase.__init__(self, file_in, file_out)
+class Huff(HuffBase): #compressione
 
-        self.freq_table = char_freq(self.file_in) #creo tabella delle frequenze
+    def __init__(self, file_in, file_out):
+
+        HuffBase.__init__(self, file_in, file_out, True) #encoding=True
+
+        self.freq_table = char_freq(self.file_in) #creo tabella delle frequenze e genero albero
         write_header(self.file_out, self.freq_table) #scrivo l'header (contiene le frequenze dei caratteri)
-        self._gen_codes()
-
-        self.file_in.seek(0)
+        self._gen_codes() #genero codici per ciascun carattere
+        self.file_in.seek(0) #mi metto all'inizio del file di input
         self._encode_input()
         self._cleanup()
 
@@ -323,15 +364,24 @@ class Huff(HuffBase):
         codify_to_huffman(self.file_in, self.file_out, self.freq_table.codes)
 
 
-class Unhuff(HuffBase):
-    def __init__(self, file_in, file_out, choice): #se choice=="f" allora va bene questo codice, se choice=="s" devo fare con le statistiche
-        HuffBase.__init__(self, file_in, file_out, False)
+class Unhuff(HuffBase): #decompressione
+
+    def __init__(self, file_in, file_out):
+
+        HuffBase.__init__(self, file_in, file_out, False) #encoding=False
         
-        self.freq_table = read_header(self.file_in)
-        self._gen_codes()
+        self.freq_table = read_header(self.file_in) #leggo tabella delle frequenze dall'header
+        self._gen_codes() #genero codici per ciascun carattere
         self._decode_input()
         self._cleanup()
 
     def _decode_input(self):
         binstr = read_encoded(self.file_in)
         decode_huffman(self.file_out, self.root, binstr)
+
+
+def main(file, file_compr_huf, file_decompr_huf):
+
+    Huff(file, file_compr_huf) #compressione
+
+    Unhuff(file_compr_huf, file_decompr_huf) #decompressione

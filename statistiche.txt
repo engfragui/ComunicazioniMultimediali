@@ -1,3 +1,5 @@
+bozza di quelle che potrebbero essere le statistiche su cui puo' lavorare huffman statico al posto di calcolarsi lui le frequenze di ciascun carattere
+
 freq = defaultdict(int)
 
 #qui di seguito le frequenze by wikipedia per l'alfabeto italiano

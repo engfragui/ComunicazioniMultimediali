@@ -186,26 +186,10 @@ class Decoder(object):
         fout.write(decoded)
         fout.close()
 
-if __name__=='__main__':
+def main(file, file_compr_huf2, file_decompr_huf2):
 
-    #imposto nomi file
-    original_file = raw_input("Inserisci il nome del file da comprimere: ")
-    original_file_split = original_file.split(".")
-    file_name = original_file_split[0]
-    compressed_file = file_name + '_compr.scw'
-    decompressed_file = file_name + '_decompr.txt'
+    enc = Encoder(file)
+    enc.write(file_compr_huf2)
 
-    # first way to use Encoder/Decoder
-    enc = Encoder(original_file)
-    enc.write(compressed_file)
-    dec = Decoder(compressed_file)
-    dec.decode_as(decompressed_file)
-
-    # second way
-    #enc = Encoder()
-    #enc.encode(original_file)
-    #enc.write(compressed_file)
-    #dec = Decoder()
-    #dec.read(compressed_file)
-    #dec.decode_as(decompressed_file)
-    ## end of http://code.activestate.com/recipes/576603/ }}}
+    dec = Decoder(file_compr_huf2)
+    dec.decode_as(file_decompr_huf2)
