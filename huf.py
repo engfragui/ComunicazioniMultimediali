@@ -2,144 +2,124 @@ import heapq
 import struct
 from collections import defaultdict
 
-
-def char_freq(file_obj):
-
-    """Costruisce tabelle delle frequenze a partire dai caratteri presenti nel file"""
+def char_freq(file_obj, mode): #Costruisce tabelle delle frequenze a partire dai caratteri presenti nel file
+    #mode=True calcolo io le frequenze, mode=False uso statistiche
 
     freq = defaultdict(int) #lista di elementi in cui il primo e' il carattere, il secondo la frequenza
-    for line in file_obj:
-        print line
-        for ch in line:
-            print ch
-            freq[ch] += 1
-            print "carattere " + ch + " ha frequenza " + str(freq[ch])
+
+    if mode: #se devo calcolare io le frequenze dei vari caratteri
+
+        for line in file_obj:
+            for ch in line:
+                freq[ch] += 1
+
+    else: #se devo usare statistiche prefissate
+
+        freq['\n'] = 226
+        freq[' '] = 10566
+        freq[','] = 906
+        freq['.'] = 1319
+        freq[';'] = 11
+
+        freq['A'] = 97
+        freq['B'] = 0
+        freq['C'] = 116
+        freq['D'] = 108
+        freq['E'] = 40
+        freq['F'] = 49
+        freq['G'] = 0
+        freq['H'] = 0
+        freq['I'] = 92
+        freq['L'] = 17
+        freq['M'] = 142
+        freq['N'] = 174
+        freq['O'] = 0
+        freq['P'] = 183
+        freq['Q'] = 52
+        freq['R'] = 0
+        freq['S'] = 142
+        freq['T'] = 0
+        freq['U'] = 36
+        freq['V'] = 93
+        freq['Z'] = 0
+
+        freq['a'] = 4783
+        freq['b'] = 728
+        freq['c'] = 2414
+        freq['d'] = 1657
+        freq['e'] = 6779
+        freq['f'] = 390
+        freq['g'] = 783
+        freq['h'] = 337
+        freq['i'] = 5844
+        freq['j'] = 76
+        freq['l'] = 3452
+        freq['m'] = 2570
+        freq['n'] = 3487
+        freq['o'] = 2536
+        freq['p'] = 1378
+        freq['q'] = 723
+        freq['r'] = 3317
+        freq['s'] = 5001
+        freq['t'] = 5045
+        freq['u'] = 5311
+        freq['v'] = 926
+        freq['z'] = 0
 
     print "ecco la tabella delle frequenze:"
     print freq.items()
-    print ""
 
     print "ecco la HuffStructure:"
     print HuffStructure(freq.iteritems())
-    print ""
 
-    return HuffStructure(freq.iteritems()) #generazione dell'albero
+    return HuffStructure(freq.iteritems()) #generazione della tabella delle frequenze
 
+def write_header(f_out_obj, frequency_table, mode): #Funzione che scrive l'header sul file
 
-def read_header_nonvisibile(f_in):
-    """VERSIONE ORIGINALE MA NON LEGGIBILE"""
-    header = f_in.read(1024) # 256 symbols, 4 bytes each
-    #essendo non leggibile dall'utente finale questo header non mi piace molto!
+    if mode: #frequenze calcolate
 
-    unpacked_header = struct.unpack('256I', header)
+        header = (struct.pack('I', frequency_table[chr(i)].freq) for i in xrange(256))
+        #I significa unsigned int (ovvero utilizzo 4 bit per ogni carattere)
+        #per ogni carattere ascii (256) ho salvato quante volte compare nel mio file
 
-    print unpacked_header #TODO debug
+        f_out_obj.write(''.join(header))
 
-    return HuffStructure(((chr(ch_indx), weight) for ch_indx, \
-                            weight in enumerate(unpacked_header) if weight))
+    else: #uso statistiche
 
-def read_header_miaversione(f_in):
-    """Reads a huffman header. VERSIONE FATTA DA ME"""
+        print "Non faccio nulla"
 
-    header = []
+def read_header(f_in, mode): #Funzione che legge l'header del file
 
-    for i in range(0,256):
-        print i
-        header.append(int(f_in.read(4)))
+    if mode: #frequenze calcolate
 
-    print header #TODO debug
+        header = f_in.read(1024) #leggo 1024 byte di header (256 caratteri x 4 byte ciascuno)
+        #questo header non e' leggibile dall'utente finale
 
-    return HuffStructure(((chr(ch_indx), weight) for ch_indx,\
-                                                     weight in enumerate(header) if weight))
+        unpacked_header = struct.unpack('256I', header)
 
+        print unpacked_header
 
-def read_header(f_in):
-    """Reads a huffman header. VERSIONE FATTA DA ME"""
+        return HuffStructure(((chr(ch_indx), freq) for ch_indx, freq in enumerate(unpacked_header) if freq))
 
-    header = []
+    else: #uso statistiche
 
-    for i in range(0,256):
-        number = []
-        c = f_in.read(1) #leggo un carattere
-        while (c!=";"): #finche' diverso dal separatore
-            number.append(c) #lo appendo per formare il numero totale
-            c = f_in.read(1) #leggo un altro carattere
-        header.append(number)
+        return char_freq(f_in, mode)
 
-    print header #TODO debug
+def codify_to_huffman(f_in, f_out, codes): #Codifica il file sulla base dell'albero dei codici generato poco fa
 
-    return HuffStructure(((chr(ch_indx), weight) for ch_indx,\
-                                                     weight in enumerate(header) if weight))
-
-
-def write_header_nonvisibile(f_out_obj, frequency_table):
-    """VERSIONE ORIGINALE MA NON LEGGIBILE"""
-
-    for i in xrange(256): #percorro tutti i 256 caratteri dell'ascii #TODO debug
-        print "carattere " + chr(i) + " ha peso " + str(frequency_table[chr(i)].weight) #TODO debug
-        #per ogni carattere ascii (256) mi salvo quante volte compare nel mio file
-        #questo e' l'header che andro' ad utilizzare
-        #domanda: nell'header non era piu' carino scrivere gia' come si codificano i vari caratteri utilizzati
-        #piuttosto che scrivere tutte le lettere ascii e le loro frequenze?
-        #pero' cosi' ho sempre lunghezza fissa. forse lo faccio per quello
-
-    header = (struct.pack('I', frequency_table[chr(i)].weight) \
-                for i in xrange(256))
-    #I = unsigned int (4 bit ogni carattere)
-
-    #non mi piace fare cosi' (visto che poi in output non si vede una cippa)
-    #preferisco fare che le frequenze le scrivo in formato 4 caratteri cosi' sono di lunghezza fissa
-    #quindi mi e' comodo poi andarle a leggere (lunghezza fissa)
-    #ma riesco anche a vedere a video
-    #l'unica cosa che fa schifo e' che ogni volta devo "sprecare" un sacco di caratteri (4byte*256)
-
-    f_out_obj.write(''.join(header))
-
-def write_header_miaversione(f_out_obj, frequency_table):
-    """Write to file output a huffman header. VERSIONE FATTA DA ME"""
-
-    for i in xrange(256): #percorro tutti i 256 caratteri dell'ascii #TODO debug
-        print "carattere " + chr(i) + " ha peso " + str(frequency_table[chr(i)].weight) #TODO debug
-
-
-    header = ''
-    for i in xrange(256):
-        print '%(#)04s' % {"#" : frequency_table[chr(i)].weight}
-        header += '%(#)04s' % {"#" : frequency_table[chr(i)].weight}
-
-    f_out_obj.write(''.join(header))
-
-def write_header(f_out_obj, frequency_table):
-    """Write to file output a huffman header. VERSIONE FATTA DA ME"""
-
-    for i in xrange(256): #percorro tutti i 256 caratteri dell'ascii #TODO debug
-        print "carattere " + chr(i) + " ha peso " + str(frequency_table[chr(i)].weight) #TODO debug
-
-
-    header = ''
-    for i in xrange(256):
-        print frequency_table[chr(i)].weight
-        header += str(frequency_table[chr(i)].weight) + ";"
-
-    f_out_obj.write(''.join(header))
-
-
-def codify_to_huffman(f_in, f_out, codes):
-    """codes are the generated codes for input data."""
-    bstr = ''.join([codes[ch] for line in f_in for ch in line])
-    bstr_len_by8, remaining = divmod(len(bstr), 8)
+    bstr = ''.join([codes[ch] for line in f_in for ch in line]) #mi salvo il file di input
+    print "bstr" + str(bstr)
+    bstr_len_by8, remaining = divmod(len(bstr), 8) #divido la lunghezza di bstr per 8
 
     bstrs = [bstr[i << 3:(i + 1) << 3] for i in xrange(bstr_len_by8)]
     obstrs = [int(obstr, 2) for obstr in bstrs]
 
-    if remaining:
-        # we need to complete last byte, so make sure it is a good 8-bit
-        # string
+    if remaining: #dobbiamo completare l'ultimo byte e farlo arrivare a 8 bit
+
         obstrs.append(int(bstr[-remaining:].ljust(8, '0'), 2))
 
-    # write the code that identifies end of huffman encoding
-    # this is actually the last byte in the file.
-    obstrs.append((8 - remaining) % 8) # last byte code
+    #Scriviamo il codice per identificare l'ultimo byte
+    obstrs.append((8 - remaining) % 8)
     f_out.write(struct.pack('%dB' % len(obstrs), *obstrs))
 
 
@@ -180,33 +160,24 @@ def decode_huffman(f_out_obj, root, binstr):
             root = start
 
 
-class NoSymbols(Exception):
-    """Raised when trying to build a tree for an empty input file."""
+class HuffNode(object): #Rappresentazione di un nodo nell'albero
 
-
-class HuffNode(object):
-    """Representation of a node in a 'Huffman tree'."""
-
-    def __init__(self, weight, data, left=None, right=None):
-        self.weight = weight
+    def __init__(self, freq, data, left=None, right=None):
+        self.freq = freq
         self.data = data
         self.left = left
         self.right = right
 
-    def __cmp__(self, other_node):
-        """Compare nodes by their weight, if they weight the same, compare
-        them by their data."""
-        res = cmp(self.weight, other_node)
+    def __cmp__(self, other_node): #Confronta i nodi in base alla frequenza (se hanno stessa frequenza va in base all'ordine alfabetico)
+
+        res = cmp(self.freq, other_node)
         if res == 0 and hasattr(other_node, 'data'):
-            # symbols have same weight, compare by lexical order then
+            #Se i caratteri hanno la stessa frequenza, li confronta in base all'ordine alfabetico
             res = cmp(self.data, other_node.data)
 
         return res
 
-
-class HuffStructure(dict):
-
-    """Albero dei caratteri"""
+class HuffStructure(dict): #Albero dei caratteri
 
     def __init__(self, *args, **kwargs):
         self.update(*args, **kwargs)
@@ -214,99 +185,117 @@ class HuffStructure(dict):
         self.codes = {} # symbols' code
         self.tree_built = False
 
-        # cache for ordered items
+        # cache for ordered items (?)
         self.cached = False
         self._cached = None
 
     def __setitem__(self, key, value):
-        """When doing huffstruct[key] = val, a new HuffNode is created,
-        if val is not a HuffNode, where val is its weight and key its data.
-        If val is a HuffNode, set a new node to the key."""
+
+        #Se val non e' un HuffNode, con huffstruct[key] = val viene creato un nuovo HuffNode
+        #Se val e' un HuffNode, con huffstruct[key] = val si risetta un nuovo valore per quella key
+
         if not isinstance(value, HuffNode):
             value = HuffNode(value, key)
 
         dict.__setitem__(self, key, value)
+
         # since the dict was updated, the cache is not valid anymore.
         self.cached = False
 
     def __getitem__(self, key):
-        """Return a new HuffNode with 0 weight and key as its data, in
-        case of trying to access an inexistant key."""
+
+        #Restituisce un nuovo new HuffNode con frequenza 0 e key come data nel caso in cui si voglia accedere a una chiave inesistente
+
         if dict.__contains__(self, key):
             value = dict.__getitem__(self, key)
         else:
             value = HuffNode(0, key)
-            # new node created, cache is invalid
+
+            #Un nuovo nodo e' stato creato, quindi la cache non e' piu' valida
             self.cached = False
 
         return value
 
     def __delitem__(self, key):
-        """Upon item deletion we need to invalidate cache."""
+
+        #Dopo la cancellazione di un elemento, la cache non e' piu' valida
+
         dict.__delitem__(self, key)
         self.cached = False
 
     def update(self, *args, **kwargs):
-        """
-        Custom dict update, expects args[0] to be an iterable with (x, y)
-        values.
-        """
+
+        #Si aspetta args[0] come un iterable con valori (x, y)
+
         for k, v in args[0]:
             self[k] = v
 
         self.cached = False
 
     def ordered_items(self):
-        """Return items ordered by weight, so it is easier and faster
-        to build the tree later."""
+
+        #Restituisce gli oggetti ordinati in base alla frequenza, cosi' poi sara' piu' facile e veloce costruire l'albero
+
+        print "ordered_items"
+
         return self._cached_order()
 
-    def build_tree(self):
-        """Build tree from ordered items."""
-        if not len(self):
-            raise NoSymbols("input file is empty.")
+    def build_tree(self): #Costruisce albero dei caratteri
 
         items = self.ordered_items()
+        #items = lista di tuple (nodo, carattere) ordinata in base alla frequenza ed eventualmente all'ordine alfabetico
+        print "Ecco la lista items:"
+        print items
 
-        while len(items) > 1:
-            # get the two first nodes, the ones with lowest weight
+        while len(items) > 1: #finche' ci sono caratteri nella lista
+
+            #Estraggo i due nodi con la frequenza piu' bassa
             node_left = heapq.heappop(items)
             node_right = heapq.heappop(items)
+            print "pop del nodo " + node_left[1] + " che ha frequenza " + str(node_left[0].freq)
+            print "e del nodo " + node_right[1] + " che ha frequenza " + str(node_right[0].freq)
             
-            weight_sum = node_left[0].weight + node_right[0].weight
-            repr_str = node_left[1] + node_right[1]
+            freq_sum = node_left[0].freq + node_right[0].freq #calcolo la somma delle loro frequenze
+            repr_str = node_left[1] + node_right[1] #do come data del nodo la concatenazione dei due caratteri
 
-            # construct a binary tree
-            father = HuffNode(weight_sum, repr_str)
+            #Credo nuovo nodo, mettendo a sinistra e destra i due elementi poppati poco fa
+            father = HuffNode(freq_sum, repr_str)
             father.left = node_left[0]
             father.right = node_right[0]
 
-            # add father back to the heap
+            #Aggiungo il padre alla lista dei nodi
             heapq.heappush(items, (father, repr_str))
 
-        self.tree_built = True
-        return items.pop()[0] # root
+            print "Ecco la lista items:"
+            print items
 
-    def generate_codes(self, root, code=''):
-        """Generate codes from built tree by travessing it."""
+        self.tree_built = True
+
+        return items.pop()[0] #Restituisco la radice dopo aver costruito l'albero
+
+    def generate_codes(self, root, code=''): #Genera ricorsivamente i codici per i caratteri a partire dall'albero
+
         if not self.tree_built:
             self.build_tree()
 
-        if root.left is None and root.right is None:
-            # a leaf node here, the code for this symbol should be complete
+        if root.left is None and root.right is None: #Sono giunta ad una foglia (il codice per il simbolo e' completo)
             self.codes[root.data] = code
-            print "carattere " + root.data + " ha codice " + code #TODO debug
+            print "carattere " + root.data + " ha codice " + code
         else:
             self.generate_codes(root.left, code + '0')
             self.generate_codes(root.right, code + '1')
 
     def _cached_order(self):
-        """Return cached items ordered, or, order them now and cache."""
+
+        #Restituisce gli elementi cached ordinati oppure li ordina e poi li mette in cache
+
+        print "_cached_order"
+
         if self.cached:
             items = self._cached
         else:
-            # construct items as tuples of (nodeweight, symbol) so heapq will
-            # extract items with the lowest weight first
+            #costruisce gli elementi come tuple (frequenza, carattere) cosi' heapq estrarra' prima gli elementi con frequenza piu' bassa
+
             items = [(item[1], item[0]) for item in dict(self).iteritems()]
 
             heapq.heapify(items)
@@ -316,9 +305,7 @@ class HuffStructure(dict):
         return items
 
 
-class HuffBase(object):
-
-    """Classe base da cui ereditano Huff e Unhuff"""
+class HuffBase(object): #Classe base da cui ereditano Huff e Unhuff
 
     def __init__(self, file_in, file_out, encoding):
 
@@ -335,53 +322,60 @@ class HuffBase(object):
 
         self.root = None
 
-    def _gen_codes(self):
-
-        """Costruisce albero dei caratteri e genera codici per ciascun nodo (carattere)"""
+    def _gen_codes(self): #Costruisce albero dei caratteri e genera codici per ciascun carattere
 
         self.root = self.freq_table.build_tree()
         self.freq_table.generate_codes(self.root)
 
     def _cleanup(self):
+
+        #Chiude i file dopo averli utilizzati
+
         self.file_in.close()
         self.file_out.close()
 
+class Huff(HuffBase): #Classe che si occupa della compressione del file
 
-class Huff(HuffBase): #compressione
-
-    def __init__(self, file_in, file_out):
+    def __init__(self, file_in, file_out, mode): #mode=True se calcolo frequenze, mode=False se uso statistiche
 
         HuffBase.__init__(self, file_in, file_out, True) #encoding=True
 
-        self.freq_table = char_freq(self.file_in) #creo tabella delle frequenze e genero albero
-        write_header(self.file_out, self.freq_table) #scrivo l'header (contiene le frequenze dei caratteri)
-        self._gen_codes() #genero codici per ciascun carattere
+        self.freq_table = char_freq(self.file_in, mode) #creo tabella delle frequenze
+        write_header(self.file_out, self.freq_table, mode) #se devo, scrivo l'header contenente le frequenze dei caratteri
+        self._gen_codes() #genero codice per ciascun carattere
         self.file_in.seek(0) #mi metto all'inizio del file di input
-        self._encode_input()
-        self._cleanup()
+        self._encode_input() #codifico il file
+        self._cleanup() #chiudo i file
 
     def _encode_input(self):
         codify_to_huffman(self.file_in, self.file_out, self.freq_table.codes)
 
 
-class Unhuff(HuffBase): #decompressione
+class Unhuff(HuffBase): #Classe che si occupa della decompressione
 
-    def __init__(self, file_in, file_out):
+    def __init__(self, file_in, file_out, mode): #mode=True se calcolo frequenze, mode=False se uso statistiche
 
         HuffBase.__init__(self, file_in, file_out, False) #encoding=False
         
-        self.freq_table = read_header(self.file_in) #leggo tabella delle frequenze dall'header
-        self._gen_codes() #genero codici per ciascun carattere
-        self._decode_input()
-        self._cleanup()
+        self.freq_table = read_header(self.file_in, mode) #se devo, leggo tabella delle frequenze dall'header. se no, uso statistiche. in ogni caso, genero albero
+        self._gen_codes() #genero codice per ciascun carattere
+        self._decode_input() #decodifico il file
+        self._cleanup() #chiudo i file
 
     def _decode_input(self):
         binstr = read_encoded(self.file_in)
         decode_huffman(self.file_out, self.root, binstr)
 
 
-def main(file, file_compr_huf, file_decompr_huf):
+def main(file, file_com_huf, file_dec_huf, mode): #mode e' True se calcolo frequenze io, False se uso le statistiche
 
-    Huff(file, file_compr_huf) #compressione
+    if mode:
+        print "---Huffman statico con calcolo delle frequenze"
+    else:
+        print "---Huffman statico con uso delle statistiche"
 
-    Unhuff(file_compr_huf, file_decompr_huf) #decompressione
+    print "---Compressione del file"
+    Huff(file, file_com_huf, mode) #compressione
+
+    print "---Decompressione del file"
+    Unhuff(file_com_huf, file_dec_huf, mode) #decompressione
