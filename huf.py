@@ -15,15 +15,15 @@ def char_freq(file_obj, mode): #Costruisce tabelle delle frequenze a partire dai
 
     else: #se devo usare statistiche prefissate
 
-        freq['\n'] = 226
-        freq[' '] = 10566
+        freq['\n'] = 1
+        freq[' '] = 1
         freq[','] = 906
         freq['.'] = 1319
         freq[';'] = 11
 
-        freq['A'] = 97
-        freq['B'] = 0
-        freq['C'] = 116
+        freq['A'] = 1
+        freq['B'] = 111111
+        freq['C'] = 11111
         freq['D'] = 108
         freq['E'] = 40
         freq['F'] = 49
@@ -370,9 +370,9 @@ class Unhuff(HuffBase): #Classe che si occupa della decompressione
 def main(file, file_com_huf, file_dec_huf, mode): #mode e' True se calcolo frequenze io, False se uso le statistiche
 
     if mode:
-        print "---Huffman statico con calcolo delle frequenze"
+        print "--Huffman statico con calcolo delle frequenze"
     else:
-        print "---Huffman statico con uso delle statistiche"
+        print "--Huffman statico con uso delle statistiche"
 
     print "---Compressione del file"
     Huff(file, file_com_huf, mode) #compressione

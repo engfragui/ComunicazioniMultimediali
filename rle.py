@@ -53,7 +53,7 @@ class rle:
 
 def main(file, file_com_rl, file_dec_rl):
 
-    print "---Run Length Encoding"
+    print "--Run Length Encoding"
 
     print "---Compressione del file"
 

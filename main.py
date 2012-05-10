@@ -11,7 +11,7 @@ import os
 
 if __name__ == "__main__":
 
-    print "Benvenuto!\n"
+    print "\nBenvenuto!\n"
 
     file = raw_input("Inserisci il nome del file: ")
 
