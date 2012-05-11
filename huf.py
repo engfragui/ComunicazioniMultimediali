@@ -1,6 +1,9 @@
+import all
+
 import heapq
 import struct
 from collections import defaultdict
+import time
 
 def char_freq(file_obj, mode): #Costruisce tabelle delle frequenze a partire dai caratteri presenti nel file
     #mode=True calcolo io le frequenze, mode=False uso statistiche
@@ -15,7 +18,7 @@ def char_freq(file_obj, mode): #Costruisce tabelle delle frequenze a partire dai
 
     else: #se devo usare statistiche prefissate
 
-        freq['\n'] = 1
+        freq['\n'] = 1.5
         freq[' '] = 1
         freq[','] = 906
         freq['.'] = 1319
@@ -66,11 +69,11 @@ def char_freq(file_obj, mode): #Costruisce tabelle delle frequenze a partire dai
         freq['v'] = 926
         freq['z'] = 0
 
-    print "ecco la tabella delle frequenze:"
-    print freq.items()
+    #print "ecco la tabella delle frequenze:"
+    #print freq.items()
 
-    print "ecco la HuffStructure:"
-    print HuffStructure(freq.iteritems())
+    #print "ecco la HuffStructure:"
+    #print HuffStructure(freq.iteritems())
 
     return HuffStructure(freq.iteritems()) #generazione della tabella delle frequenze
 
@@ -84,9 +87,7 @@ def write_header(f_out_obj, frequency_table, mode): #Funzione che scrive l'heade
 
         f_out_obj.write(''.join(header))
 
-    else: #uso statistiche
-
-        print "Non faccio nulla"
+    #altrimenti (uso statistiche) non faccio nulla"
 
 def read_header(f_in, mode): #Funzione che legge l'header del file
 
@@ -97,7 +98,7 @@ def read_header(f_in, mode): #Funzione che legge l'header del file
 
         unpacked_header = struct.unpack('256I', header)
 
-        print unpacked_header
+        #print unpacked_header
 
         return HuffStructure(((chr(ch_indx), freq) for ch_indx, freq in enumerate(unpacked_header) if freq))
 
@@ -108,7 +109,7 @@ def read_header(f_in, mode): #Funzione che legge l'header del file
 def codify_to_huffman(f_in, f_out, codes): #Codifica il file sulla base dell'albero dei codici generato poco fa
 
     bstr = ''.join([codes[ch] for line in f_in for ch in line]) #mi salvo il file di input
-    print "bstr" + str(bstr)
+    #print "bstr" + str(bstr)
     bstr_len_by8, remaining = divmod(len(bstr), 8) #divido la lunghezza di bstr per 8
 
     bstrs = [bstr[i << 3:(i + 1) << 3] for i in xrange(bstr_len_by8)]
@@ -236,7 +237,7 @@ class HuffStructure(dict): #Albero dei caratteri
 
         #Restituisce gli oggetti ordinati in base alla frequenza, cosi' poi sara' piu' facile e veloce costruire l'albero
 
-        print "ordered_items"
+        #print "ordered_items"
 
         return self._cached_order()
 
@@ -244,16 +245,16 @@ class HuffStructure(dict): #Albero dei caratteri
 
         items = self.ordered_items()
         #items = lista di tuple (nodo, carattere) ordinata in base alla frequenza ed eventualmente all'ordine alfabetico
-        print "Ecco la lista items:"
-        print items
+        #print "Ecco la lista items:"
+        #print items
 
         while len(items) > 1: #finche' ci sono caratteri nella lista
 
             #Estraggo i due nodi con la frequenza piu' bassa
             node_left = heapq.heappop(items)
             node_right = heapq.heappop(items)
-            print "pop del nodo " + node_left[1] + " che ha frequenza " + str(node_left[0].freq)
-            print "e del nodo " + node_right[1] + " che ha frequenza " + str(node_right[0].freq)
+            #print "pop del nodo " + node_left[1] + " che ha frequenza " + str(node_left[0].freq)
+            #print "e del nodo " + node_right[1] + " che ha frequenza " + str(node_right[0].freq)
             
             freq_sum = node_left[0].freq + node_right[0].freq #calcolo la somma delle loro frequenze
             repr_str = node_left[1] + node_right[1] #do come data del nodo la concatenazione dei due caratteri
@@ -266,8 +267,8 @@ class HuffStructure(dict): #Albero dei caratteri
             #Aggiungo il padre alla lista dei nodi
             heapq.heappush(items, (father, repr_str))
 
-            print "Ecco la lista items:"
-            print items
+            #print "Ecco la lista items:"
+            #print items
 
         self.tree_built = True
 
@@ -280,7 +281,7 @@ class HuffStructure(dict): #Albero dei caratteri
 
         if root.left is None and root.right is None: #Sono giunta ad una foglia (il codice per il simbolo e' completo)
             self.codes[root.data] = code
-            print "carattere " + root.data + " ha codice " + code
+            #print "carattere " + root.data + " ha codice " + code
         else:
             self.generate_codes(root.left, code + '0')
             self.generate_codes(root.right, code + '1')
@@ -289,7 +290,7 @@ class HuffStructure(dict): #Albero dei caratteri
 
         #Restituisce gli elementi cached ordinati oppure li ordina e poi li mette in cache
 
-        print "_cached_order"
+        #print "_cached_order"
 
         if self.cached:
             items = self._cached
@@ -370,12 +371,22 @@ class Unhuff(HuffBase): #Classe che si occupa della decompressione
 def main(file, file_com_huf, file_dec_huf, mode): #mode e' True se calcolo frequenze io, False se uso le statistiche
 
     if mode:
-        print "--Huffman statico con calcolo delle frequenze"
+        print "\nHUFFMAN STATICO (CALCOLO FREQUENZE)"
     else:
-        print "--Huffman statico con uso delle statistiche"
+        print "\nHUFFMAN STATICO (USO STATISTICHE)"
 
-    print "---Compressione del file"
-    Huff(file, file_com_huf, mode) #compressione
+    print "Codifica"
+    now = time.time()
+    #compressione del file
+    Huff(file, file_com_huf, mode)
+    print "\t" + str(time.time() - now) + "\tseconds"
+    all.dim(file_com_huf)
 
-    print "---Decompressione del file"
-    Unhuff(file_com_huf, file_dec_huf, mode) #decompressione
+    print "Decodifica"
+    now = time.time()
+    #decompressione del file
+    Unhuff(file_com_huf, file_dec_huf, mode)
+    print "\t" + str(time.time() - now) + "\tseconds"
+    all.dim(file_dec_huf)
+
+    all.check(file,file_dec_huf)

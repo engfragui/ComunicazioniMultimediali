@@ -4,6 +4,7 @@
 #insomma: cartella e file si devono chiamare allo stesso modo
 #alla fine dell'esecuzione, nella cartella compariranno i file generati dal programma
 
+import all
 import rle
 import huf
 
@@ -31,9 +32,15 @@ if __name__ == "__main__":
     #entro nella cartella
     os.chdir(file_name)
 
+    #utility che conta il numero dei caratteri
+    print "\nOriginale"
+    all.dim(file)
+
     #faccio partire rle
     rle.main(file, file_com_rl, file_dec_rl)
+
     #faccio partire huffman con calcolo frequenze
     huf.main(file, file_com_hf, file_dec_hf, True) #True perche' gli dico di fare con calcolo frequenze
+
     #faccio partire huffman usanto statistiche fisse
     huf.main(file, file_com_hs, file_dec_hs, False) #True perche' gli dico di fare con statistiche fisse
