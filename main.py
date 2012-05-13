@@ -4,6 +4,13 @@
 #insomma: cartella e file si devono chiamare allo stesso modo
 #alla fine dell'esecuzione, nella cartella compariranno i file generati dal programma
 
+#per fare i colori
+#print '\033[95m' + "prova" + '\033[0m' #fucsia
+#print '\033[94m' + "prova" + '\033[0m' #blu
+#print '\033[92m' + "prova" + '\033[0m' #verde
+#print '\033[91m' + "prova" + '\033[0m' #rosso
+
+
 import all
 import rle
 import huf
@@ -33,7 +40,7 @@ if __name__ == "__main__":
     os.chdir(file_name)
 
     #utility che conta il numero dei caratteri
-    print "\nOriginale"
+    print "\nFile originale"
     all.dim(file)
 
     #faccio partire rle

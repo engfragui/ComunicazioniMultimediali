@@ -73,14 +73,14 @@ class rle:
 
 def main(file, file_com_rl, file_dec_rl):
 
-    print "\nRUN LENGTH ENCODING"
+    print '\033[94m' + "\n\nRun Length Encoding" + '\033[0m'
 
     print "Codifica"
     now = time.time()
     #compressione del file
     erle = rle()
     erle.encode(file, file_com_rl)
-    print "\t" + str(time.time() - now) + "\tseconds"
+    print "\t" + str('%.5f' % (time.time() - now)) + "\tseconds"
     all.dim(file_com_rl)
 
     print "Decodifica"
@@ -88,7 +88,7 @@ def main(file, file_com_rl, file_dec_rl):
     #decompressione del file
     drle = rle()
     drle.decode(file_com_rl, file_dec_rl)
-    print "\t" + str(time.time() - now) + "\tseconds"
+    print "\t" + str('%.5f' % (time.time() - now)) + "\tseconds"
     all.dim(file_dec_rl)
 
     all.check(file,file_dec_rl)

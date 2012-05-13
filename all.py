@@ -36,6 +36,6 @@ def check(file1,file2):
     t1 = f1.read()
     t2 = f2.read()
     if t1 == t2:
-        print "Decodifica corretta"
+        print '\033[92m' + "(Decodifica corretta)" + '\033[0m'
     else:
-        print "Decodifica non corretta"
+        print '\033[91m' + "(Decodifica non corretta)" + '\033[0m'

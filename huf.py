@@ -18,56 +18,116 @@ def char_freq(file_obj, mode): #Costruisce tabelle delle frequenze a partire dai
 
     else: #se devo usare statistiche prefissate
 
-        freq['\n'] = 1.5
-        freq[' '] = 1
-        freq[','] = 906
-        freq['.'] = 1319
-        freq[';'] = 11
+        """
+        pippo.txt
+        """
 
-        freq['A'] = 1
-        freq['B'] = 111111
-        freq['C'] = 11111
-        freq['D'] = 108
-        freq['E'] = 40
-        freq['F'] = 49
+        freq['\n'] = 0
+        freq[' '] = 1
+        freq[','] = 0
+        freq['.'] = 0
+        freq[';'] = 0
+
+        freq['A'] = 0
+        freq['B'] = 0
+        freq['C'] = 0
+        freq['D'] = 0
+        freq['E'] = 0
+        freq['F'] = 0
         freq['G'] = 0
         freq['H'] = 0
-        freq['I'] = 92
-        freq['L'] = 17
-        freq['M'] = 142
-        freq['N'] = 174
+        freq['I'] = 0
+        freq['L'] = 0
+        freq['M'] = 0
+        freq['N'] = 0
         freq['O'] = 0
-        freq['P'] = 183
-        freq['Q'] = 52
+        freq['P'] = 0
+        freq['Q'] = 0
         freq['R'] = 0
-        freq['S'] = 142
+        freq['S'] = 0
         freq['T'] = 0
-        freq['U'] = 36
-        freq['V'] = 93
+        freq['U'] = 0
+        freq['V'] = 0
         freq['Z'] = 0
 
-        freq['a'] = 4783
-        freq['b'] = 728
-        freq['c'] = 2414
-        freq['d'] = 1657
-        freq['e'] = 6779
-        freq['f'] = 390
-        freq['g'] = 783
-        freq['h'] = 337
-        freq['i'] = 5844
-        freq['j'] = 76
-        freq['l'] = 3452
-        freq['m'] = 2570
-        freq['n'] = 3487
-        freq['o'] = 2536
-        freq['p'] = 1378
-        freq['q'] = 723
-        freq['r'] = 3317
-        freq['s'] = 5001
-        freq['t'] = 5045
-        freq['u'] = 5311
-        freq['v'] = 926
+        freq['a'] = 0
+        freq['b'] = 0
+        freq['c'] = 0
+        freq['d'] = 0
+        freq['e'] = 0
+        freq['f'] = 0
+        freq['g'] = 0
+        freq['h'] = 0
+        freq['i'] = 2
+        freq['j'] = 0
+        freq['l'] = 0
+        freq['m'] = 0
+        freq['n'] = 0
+        freq['o'] = 2
+        freq['p'] = 259
+        freq['q'] = 0
+        freq['r'] = 0
+        freq['s'] = 0
+        freq['t'] = 0
+        freq['u'] = 0
+        freq['v'] = 0
         freq['z'] = 0
+
+
+        """
+        lorem.txt
+
+        freq['\n'] = 4418
+        freq[' '] = 205523
+        freq[','] = 17603
+        freq['.'] = 25662
+        freq[';'] = 216
+
+        freq['A'] = 1891
+        freq['B'] = 0
+        freq['C'] = 2271
+        freq['D'] = 2100
+        freq['E'] = 779
+        freq['F'] = 951
+        freq['G'] = 0
+        freq['H'] = 0
+        freq['I'] = 1792
+        freq['L'] = 332
+        freq['M'] = 2754
+        freq['N'] = 3383
+        freq['O'] = 0
+        freq['P'] = 3561
+        freq['Q'] = 1006
+        freq['R'] = 0
+        freq['S'] = 2758
+        freq['T'] = 0
+        freq['U'] = 690
+        freq['V'] = 1826
+        freq['Z'] = 0
+
+        freq['a'] = 93097
+        freq['b'] = 14176
+        freq['c'] = 46966
+        freq['d'] = 32267
+        freq['e'] = 131764
+        freq['f'] = 7609
+        freq['g'] = 15261
+        freq['h'] = 6547
+        freq['i'] = 113716
+        freq['j'] = 1476
+        freq['l'] = 67104
+        freq['m'] = 49943
+        freq['n'] = 67804
+        freq['o'] = 49338
+        freq['p'] = 26819
+        freq['q'] = 14087
+        freq['r'] = 64478
+        freq['s'] = 97300
+        freq['t'] = 98108
+        freq['u'] = 103401
+        freq['v'] = 18014
+        freq['z'] = 0
+        """
 
     #print "ecco la tabella delle frequenze:"
     #print freq.items()
@@ -87,29 +147,29 @@ def write_header(f_out_obj, frequency_table, mode): #Funzione che scrive l'heade
 
         f_out_obj.write(''.join(header))
 
-    #altrimenti (uso statistiche) non faccio nulla"
+    #altrimenti (uso statistiche) cioe' non faccio nulla
 
 def read_header(f_in, mode): #Funzione che legge l'header del file
 
     if mode: #frequenze calcolate
 
         header = f_in.read(1024) #leggo 1024 byte di header (256 caratteri x 4 byte ciascuno)
-        #questo header non e' leggibile dall'utente finale
-
         unpacked_header = struct.unpack('256I', header)
-
         #print unpacked_header
-
         return HuffStructure(((chr(ch_indx), freq) for ch_indx, freq in enumerate(unpacked_header) if freq))
 
     else: #uso statistiche
 
         return char_freq(f_in, mode)
 
+
 def codify_to_huffman(f_in, f_out, codes): #Codifica il file sulla base dell'albero dei codici generato poco fa
 
     bstr = ''.join([codes[ch] for line in f_in for ch in line]) #mi salvo il file di input
-    #print "bstr" + str(bstr)
+
+    #print "len bstr"
+    #print len(str(bstr))
+
     bstr_len_by8, remaining = divmod(len(bstr), 8) #divido la lunghezza di bstr per 8
 
     bstrs = [bstr[i << 3:(i + 1) << 3] for i in xrange(bstr_len_by8)]
@@ -255,7 +315,7 @@ class HuffStructure(dict): #Albero dei caratteri
             node_right = heapq.heappop(items)
             #print "pop del nodo " + node_left[1] + " che ha frequenza " + str(node_left[0].freq)
             #print "e del nodo " + node_right[1] + " che ha frequenza " + str(node_right[0].freq)
-            
+
             freq_sum = node_left[0].freq + node_right[0].freq #calcolo la somma delle loro frequenze
             repr_str = node_left[1] + node_right[1] #do come data del nodo la concatenazione dei due caratteri
 
@@ -357,7 +417,7 @@ class Unhuff(HuffBase): #Classe che si occupa della decompressione
     def __init__(self, file_in, file_out, mode): #mode=True se calcolo frequenze, mode=False se uso statistiche
 
         HuffBase.__init__(self, file_in, file_out, False) #encoding=False
-        
+
         self.freq_table = read_header(self.file_in, mode) #se devo, leggo tabella delle frequenze dall'header. se no, uso statistiche. in ogni caso, genero albero
         self._gen_codes() #genero codice per ciascun carattere
         self._decode_input() #decodifico il file
@@ -371,22 +431,22 @@ class Unhuff(HuffBase): #Classe che si occupa della decompressione
 def main(file, file_com_huf, file_dec_huf, mode): #mode e' True se calcolo frequenze io, False se uso le statistiche
 
     if mode:
-        print "\nHUFFMAN STATICO (CALCOLO FREQUENZE)"
+        print '\033[94m' + "\n\nHuffman con calcolo delle frequenze" + '\033[0m'
     else:
-        print "\nHUFFMAN STATICO (USO STATISTICHE)"
+        print '\033[94m' + "\n\nHuffman con uso di statistiche" + '\033[0m'
 
     print "Codifica"
     now = time.time()
     #compressione del file
     Huff(file, file_com_huf, mode)
-    print "\t" + str(time.time() - now) + "\tseconds"
+    print "\t" + str('%.5f' % (time.time() - now)) + "\tseconds"
     all.dim(file_com_huf)
 
     print "Decodifica"
     now = time.time()
     #decompressione del file
     Unhuff(file_com_huf, file_dec_huf, mode)
-    print "\t" + str(time.time() - now) + "\tseconds"
+    print "\t" + str('%.5f' % (time.time() - now)) + "\tseconds"
     all.dim(file_dec_huf)
 
     all.check(file,file_dec_huf)
