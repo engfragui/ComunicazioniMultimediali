@@ -82,6 +82,7 @@ def main(file, file_com_rl, file_dec_rl):
     erle.encode(file, file_com_rl)
     print "\t" + str('%.5f' % (time.time() - now)) + "\tseconds"
     all.dim(file_com_rl)
+    all.perc_comp(file,file_com_rl)
 
     print "Decodifica"
     now = time.time()

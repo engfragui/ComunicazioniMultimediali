@@ -39,3 +39,11 @@ def check(file1,file2):
         print '\033[92m' + "(Decodifica corretta)" + '\033[0m'
     else:
         print '\033[91m' + "(Decodifica non corretta)" + '\033[0m'
+
+def perc_comp(f_orig,f_comp):
+
+    ratio = (filesize(f_orig) - filesize(f_comp) + 0.0) / filesize(f_orig)
+
+    perc = ratio * 100
+
+    print '\t%.2f' % perc + ' %'

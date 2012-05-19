@@ -339,6 +339,7 @@ def main(file, file_com_huf, file_dec_huf, language=""): #language e' "" se calc
     Huff(file, file_com_huf, language)
     print "\t" + str('%.5f' % (time.time() - now)) + "\tseconds"
     all.dim(file_com_huf)
+    all.perc_comp(file,file_com_huf)
 
     print "Decodifica"
     now = time.time()
