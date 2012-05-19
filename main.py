@@ -23,6 +23,10 @@ if __name__ == "__main__":
 
     file = raw_input("Inserisci il nome del file: ")
 
+    print ""
+
+    language = raw_input("Scegli una lingua (ita/eng): ")
+
     #preparo nomi dei file
     file_split = file.split(".")
     file_name = file_split[0]
@@ -47,7 +51,7 @@ if __name__ == "__main__":
     rle.main(file, file_com_rl, file_dec_rl)
 
     #faccio partire huffman con calcolo frequenze
-    huf.main(file, file_com_hf, file_dec_hf, True) #True perche' gli dico di fare con calcolo frequenze
+    huf.main(file, file_com_hf, file_dec_hf) #non specifico language -> calcolo frequenze
 
     #faccio partire huffman usanto statistiche fisse
-    huf.main(file, file_com_hs, file_dec_hs, False) #True perche' gli dico di fare con statistiche fisse
+    huf.main(file, file_com_hs, file_dec_hs, language) #specifico language -> statistiche fisse

@@ -1,0 +1,103 @@
+#coding: latin-1
+
+def main(freq):
+
+    freq['a'] = 8.167
+    freq['b'] = 1.492
+    freq['c'] = 2.782
+    freq['d'] = 4.253
+    freq['e'] = 12.702
+    freq['f'] = 2.228
+    freq['g'] = 2.015
+    freq['h'] = 6.094
+    freq['i'] = 6.966
+    freq['j'] = 0.153
+    freq['k'] = 0.772
+    freq['l'] = 4.025
+    freq['m'] = 2.406
+    freq['n'] = 6.749
+    freq['o'] = 7.507
+    freq['p'] = 1.929
+    freq['q'] = 0.095
+    freq['r'] = 5.987
+    freq['s'] = 6.327
+    freq['t'] = 9.056
+    freq['u'] = 2.758
+    freq['v'] = 0.978
+    freq['w'] = 2.360
+    freq['x'] = 0.150
+    freq['y'] = 1.974
+    freq['z'] = 0.074
+
+    freq['A'] = freq['a'] / 10
+    freq['B'] = freq['b'] / 10
+    freq['C'] = freq['c'] / 10
+    freq['D'] = freq['d'] / 10
+    freq['E'] = freq['e'] / 10
+    freq['F'] = freq['f'] / 10
+    freq['G'] = freq['g'] / 10
+    freq['H'] = freq['h'] / 10
+    freq['I'] = freq['i'] / 10
+    freq['J'] = freq['j'] / 10
+    freq['K'] = freq['k'] / 10
+    freq['L'] = freq['l'] / 10
+    freq['M'] = freq['m'] / 10
+    freq['N'] = freq['n'] / 10
+    freq['O'] = freq['o'] / 10
+    freq['P'] = freq['o'] / 10
+    freq['Q'] = freq['q'] / 10
+    freq['R'] = freq['r'] / 10
+    freq['S'] = freq['s'] / 10
+    freq['T'] = freq['t'] / 10
+    freq['U'] = freq['u'] / 10
+    freq['V'] = freq['v'] / 10
+    freq['W'] = freq['w'] / 10
+    freq['X'] = freq['x'] / 10
+    freq['Y'] = freq['y'] / 10
+    freq['Z'] = freq['z'] / 10
+
+    freq['\n'] = 7
+    freq[' '] = 20
+    freq['!'] = 0.7
+    freq['"'] = 1.4
+    freq['#'] = 0.01
+    freq['$'] = 0.01
+    freq['%'] = 0.01
+    freq['&'] = 0.01
+    freq["'"] = 2
+    freq['('] = 1.1
+    freq[')'] = 1.1
+    freq['*'] = 0.01
+    freq['+'] = 0.01
+    freq[','] = 10
+    freq['-'] = 1.1
+    freq['.'] = 10
+    freq['/'] = 0.01
+    freq['0'] = 0.01
+    freq['1'] = 0.01
+    freq['2'] = 0.01
+    freq['3'] = 0.01
+    freq['4'] = 0.01
+    freq['5'] = 0.01
+    freq['6'] = 0.01
+    freq['7'] = 0.01
+    freq['8'] = 0.01
+    freq['9'] = 0.01
+    freq[':'] = 1
+    freq[';'] = 2
+    freq['<'] = 0.01
+    freq['='] = 0.01
+    freq['>'] = 0.01
+    freq['?'] = 1
+    freq['@'] = 0.01
+    freq['['] = 0.01
+    freq[']'] = 0.01
+    freq['^'] = 0.01
+    freq['_'] = 0.01
+    freq['`'] = 0.01
+    freq['{'] = 0.01
+    freq['|'] = 0.01
+    freq['}'] = 0.01
+    freq['~'] = 0.01
+
+    return freq
